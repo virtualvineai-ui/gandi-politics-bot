@@ -7,7 +7,7 @@ ButtonBuilder,
 ButtonStyle,
 AttachmentBuilder,
 Events
-} = require('discord.js');
+} = require("discord.js");
 
 const client = new Client({
 intents: [
@@ -20,7 +20,7 @@ GatewayIntentBits.MessageContent
 
 const TOKEN = process.env.TOKEN;
 
-// Roles
+// ROLES
 const PUBLIC_VIEWER = "1516212113683644496";
 
 const BJP_ROLE = "1516156573620240617";
@@ -28,6 +28,7 @@ const CONGRESS_ROLE = "1516156573620240616";
 const AAP_ROLE = "1516156573620240615";
 const COCKROACH_ROLE = "1516180882942197772";
 
+// CHANNELS
 const WELCOME_CHANNEL = "1516156577122353207";
 
 client.once(Events.ClientReady, () => {
@@ -35,9 +36,11 @@ console.log("BOT READY");
 console.log(`${client.user.tag} is online!`);
 });
 
-client.on(Events.GuildMemberAdd, async (member) => {
+// =========================
+// WELCOME MESSAGE
+// =========================
 
-console.log(`${member.user.tag} joined the server`);
+client.on(Events.GuildMemberAdd, async (member) => {
 
 try {
 
@@ -92,17 +95,17 @@ embeds: [embed],
 components: [row]
 });
 
-} catch (error) {
-
-console.error(error);
-
+} catch (err) {
+console.error(err);
 }
 
 });
 
-client.on(Events.MessageCreate, async (message) => {
+// =========================
+// COMMANDS
+// =========================
 
-console.log(JSON.stringify(message.content));
+client.on(Events.MessageCreate, async (message) => {
 
 if (message.author.bot) return;
 
@@ -113,9 +116,9 @@ message.channel.name.includes("verify")
 ) {
 
 const embed = new EmbedBuilder()
-  .setColor("#0099ff")
-  .setTitle("🔐 Verify Required")
-  .setDescription(`**Welcome to Gandi Politics**
+.setColor("#0099ff")
+.setTitle("🔐 Verify Required")
+.setDescription(`**Welcome to Gandi Politics**
 
 This server requires verification before accessing all channels.
 
@@ -124,27 +127,26 @@ This server requires verification before accessing all channels.
 🚀 Instant Server Access
 
 Click the button below to verify yourself.`)
-  .setImage("attachment://verify_glitch_banner.gif");
+.setImage("attachment://verify_glitch_banner.gif");
 
+const file = new AttachmentBuilder(
+"./verify.gif/verify_glitch_banner.gif"
+);
 
-const file = new AttachmentBuilder("./verify.gif/verify_glitch_banner.gif");
 const row = new ActionRowBuilder().addComponents(
-  new ButtonBuilder()
-    .setCustomId("verify")
-    .setLabel("Verify Securely")
-    .setStyle(ButtonStyle.Primary)
+new ButtonBuilder()
+.setCustomId("verify")
+.setLabel("Verify Securely")
+.setStyle(ButtonStyle.Primary)
 );
 
 await message.channel.send({
-  embeds: [embed],
-  components: [row],
-  files: [file]
+embeds: [embed],
+components: [row],
+files: [file]
 });
 
-}
-
 await message.delete().catch(() => {});
-
 }
 
 // PARTY PANEL
@@ -157,8 +159,8 @@ const embed = new EmbedBuilder()
 "Select one party below.\n\nChanging party will automatically remove your previous party role."
 );
 
-const row = new ActionRowBuilder()
-.addComponents(
+const row = new ActionRowBuilder().addComponents(
+
 new ButtonBuilder()
 .setCustomId("bjp")
 .setLabel("🟧 BJP")
@@ -178,6 +180,7 @@ new ButtonBuilder()
 .setCustomId("cockroach")
 .setLabel("🪳 Cockroach")
 .setStyle(ButtonStyle.Secondary)
+
 );
 
 await message.channel.send({
@@ -187,35 +190,42 @@ components: [row]
 
 }
 
+});
+
+// =========================
+// BUTTONS
+// =========================
+
 client.on(Events.InteractionCreate, async (interaction) => {
 
 if (!interaction.isButton()) return;
 
-// VERIFY BUTTON
+// VERIFY
 if (interaction.customId === "verify") {
 
 try {
 
-  await interaction.member.roles.add(PUBLIC_VIEWER);
+await interaction.member.roles.add(PUBLIC_VIEWER);
 
-  return interaction.reply({
-    content: "✅ Verification Successful!",
-    ephemeral: true
-  });
+return interaction.reply({
+content: "✅ Verification Successful!",
+ephemeral: true
+});
 
-} catch (error) {
+} catch (err) {
 
-  console.error(error);
+console.error(err);
 
-  return interaction.reply({
-    content: "❌ Verification Failed.",
-    ephemeral: true
-  });
+return interaction.reply({
+content: "❌ Verification Failed.",
+ephemeral: true
+});
+
 }
 
 }
 
-// PARTY BUTTONS
+// PARTY ROLES
 if (
 interaction.customId === "bjp" ||
 interaction.customId === "congress" ||
@@ -225,51 +235,52 @@ interaction.customId === "cockroach"
 
 try {
 
-  await interaction.member.roles.remove([
-    BJP_ROLE,
-    CONGRESS_ROLE,
-    AAP_ROLE,
-    COCKROACH_ROLE
-  ]);
+await interaction.member.roles.remove([
+BJP_ROLE,
+CONGRESS_ROLE,
+AAP_ROLE,
+COCKROACH_ROLE
+]);
 
-  let roleToAdd;
-  let partyName;
+let roleToAdd;
+let partyName;
 
-  if (interaction.customId === "bjp") {
-    roleToAdd = BJP_ROLE;
-    partyName = "BJP";
-  }
+if (interaction.customId === "bjp") {
+roleToAdd = BJP_ROLE;
+partyName = "BJP";
+}
 
-  if (interaction.customId === "congress") {
-    roleToAdd = CONGRESS_ROLE;
-    partyName = "Congress";
-  }
+if (interaction.customId === "congress") {
+roleToAdd = CONGRESS_ROLE;
+partyName = "Congress";
+}
 
-  if (interaction.customId === "aap") {
-    roleToAdd = AAP_ROLE;
-    partyName = "AAP";
-  }
+if (interaction.customId === "aap") {
+roleToAdd = AAP_ROLE;
+partyName = "AAP";
+}
 
-  if (interaction.customId === "cockroach") {
-    roleToAdd = COCKROACH_ROLE;
-    partyName = "Cockroach Party";
-  }
+if (interaction.customId === "cockroach") {
+roleToAdd = COCKROACH_ROLE;
+partyName = "Cockroach Party";
+}
 
-  await interaction.member.roles.add(roleToAdd);
+await interaction.member.roles.add(roleToAdd);
 
-  return interaction.reply({
-    content: `✅ You joined ${partyName}`,
-    ephemeral: true
-  });
+return interaction.reply({
+content: `✅ You joined ${partyName}`,
+ephemeral: true
+});
 
-} catch (error) {
+} catch (err) {
 
-  console.error(error);
+console.error(err);
 
-  return interaction.reply({
-    content: "❌ Failed to assign role.",
-    ephemeral: true
-  });
+return interaction.reply({
+content: "❌ Failed to assign role.",
+ephemeral: true
+});
+
 }
 
 }

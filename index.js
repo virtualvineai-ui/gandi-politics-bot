@@ -44,6 +44,8 @@ const channel = member.guild.channels.cache.get(WELCOME_CHANNEL);
 
 if (!channel) return;
 
+await channel.send("TEST WELCOME");
+
 const canvas = createCanvas(1366, 768);
 const ctx = canvas.getContext("2d");
 

@@ -32,6 +32,8 @@ const COCKROACH_ROLE = "1516180882942197772";
 const WELCOME_CHANNEL = "1516156577122353207";
 const POLL_CHANNEL = "1516183085316706314";
 
+let lastPollDate = "";
+
 client.once(Events.ClientReady, () => {
 console.log("BOT READY");
 console.log(`${client.user.tag} is online!`);
@@ -53,7 +55,7 @@ indiaTime.getMinutes() === 0 &&
 lastPollDate !== today
 ) {
 
-lastPollDate = today; {
+lastPollDate = today;
 
 const channel = client.channels.cache.get(POLL_CHANNEL);
 

@@ -58,16 +58,6 @@ This server requires verification before accessing all channels.
 Click the button below to verify yourself.`)
   .setImage("attachment://verify_glitch_banner.gif");
 
-`**Welcome to Gandi Politics**
-
-This server requires verification before accessing all channels.
-
-⚡ Fast Verification
-🛡️ Advanced Security
-🚀 Instant Server Access
-
-Click the button below to verify yourself.`
-);
 
 const file = new AttachmentBuilder("./verify.gif/verify_glitch_banner.gif");
 const row = new ActionRowBuilder().addComponents(

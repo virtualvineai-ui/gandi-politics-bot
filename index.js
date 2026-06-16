@@ -47,8 +47,6 @@ const channel = member.guild.channels.cache.get(WELCOME_CHANNEL);
 
 if (!channel) return;
 
-await channel.send("TEST WELCOME");
-
 const canvas = createCanvas(1366, 768);
 const ctx = canvas.getContext("2d");
 
@@ -67,16 +65,16 @@ const avatar = await loadImage(avatarURL);
 ctx.save();
 
 ctx.beginPath();
-ctx.arc(1000, 260, 180, 0, Math.PI * 2);
+ctx.arc(1000, 250, 145, 0, Math.PI * 2);
 ctx.closePath();
 ctx.clip();
 
 ctx.drawImage(
 avatar,
-820,
-80,
-360,
-360
+855,
+105,
+290,
+290
 );
 
 ctx.restore();
@@ -88,17 +86,17 @@ ctx.fillStyle = "#2f8cff";
 ctx.fillText(
 `@${member.user.username}`,
 85,
-520
+305
 );
 
 // Member Count
-ctx.font = "bold 72px Sans";
+ctx.font = "bold 60px Sans";
 ctx.fillStyle = "#ffffff";
 
 ctx.fillText(
 `#${member.guild.memberCount}`,
-930,
-560
+950,
+470
 );
 
 const attachment = new AttachmentBuilder(

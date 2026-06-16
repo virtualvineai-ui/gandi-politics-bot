@@ -153,7 +153,7 @@ await message.delete().catch(() => {});
 if (
 message.content === "!party" &&
 message.channel.id === "1516224756775649300"
-)
+) {
 
 const embed = new EmbedBuilder()
 .setColor("#f1c40f")
@@ -192,8 +192,6 @@ components: [row]
 });
 
 }
-
-});
 
 // =========================
 // BUTTONS

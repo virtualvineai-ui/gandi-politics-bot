@@ -141,6 +141,10 @@ await message.channel.send({
   files: [file]
 });
 
+}
+
+});
+
 await message.delete().catch(() => {});
 
 }

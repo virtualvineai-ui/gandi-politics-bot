@@ -80,23 +80,23 @@ avatar,
 ctx.restore();
 
 // Username
-ctx.font = "bold 48px Arial";
-ctx.fillStyle = "#2f8cff";
+ctx.font = "bold 80px Arial";
+ctx.fillStyle = "#ff0000";
 
 ctx.fillText(
-member.user.username,
-85,
-365
+"MOHIT",
+300,
+300
 );
 
 // Member Count
-ctx.font = "bold 48px Arial";
-ctx.fillStyle = "#ffffff";
+ctx.font = "bold 80px Arial";
+ctx.fillStyle = "#00ff00";
 
 ctx.fillText(
-`#${member.guild.memberCount}`,
-950,
-470
+"127",
+900,
+300
 );
 
 const attachment = new AttachmentBuilder(

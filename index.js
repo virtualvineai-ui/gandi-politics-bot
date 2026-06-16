@@ -80,17 +80,17 @@ avatar,
 ctx.restore();
 
 // Username
-ctx.font = "bold 52px Sans";
+ctx.font = "bold 48px Arial";
 ctx.fillStyle = "#2f8cff";
 
 ctx.fillText(
-`@${member.user.username}`,
+member.user.username,
 85,
-305
+365
 );
 
 // Member Count
-ctx.font = "bold 60px Sans";
+ctx.font = "bold 48px Arial";
 ctx.fillStyle = "#ffffff";
 
 ctx.fillText(

@@ -33,10 +33,13 @@ const COCKROACH_ROLE = "1516180882942197772";
 const WELCOME_CHANNEL = "1516156577122353207";
 
 client.once(Events.ClientReady, () => {
+console.log("BOT READY");
 console.log(`${client.user.tag} is online!`);
 });
 
 client.on(Events.GuildMemberAdd, async (member) => {
+
+console.log("MEMBER JOIN DETECTED");
 
 try {
 

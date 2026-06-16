@@ -5,6 +5,7 @@ EmbedBuilder,
 ActionRowBuilder,
 ButtonBuilder,
 ButtonStyle,
+AttachmentBuilder,
 Events
 } = require('discord.js');
 
@@ -46,7 +47,16 @@ message.channel.name.includes("verify")
 const embed = new EmbedBuilder()
   .setColor("#0099ff")
   .setTitle("🔐 Verify Required")
-  .setDescription(
+  .setDescription(`**Welcome to Gandi Politics**
+
+This server requires verification before accessing all channels.
+
+⚡ Fast Verification
+🛡️ Advanced Security
+🚀 Instant Server Access
+
+Click the button below to verify yourself.`)
+  .setImage("attachment://verify_glitch_banner.gif");
 
 `**Welcome to Gandi Politics**
 
@@ -59,6 +69,7 @@ This server requires verification before accessing all channels.
 Click the button below to verify yourself.`
 );
 
+const file = new AttachmentBuilder("./verify.gif/verify_glitch_banner.gif");
 const row = new ActionRowBuilder().addComponents(
   new ButtonBuilder()
     .setCustomId("verify")
@@ -68,7 +79,8 @@ const row = new ActionRowBuilder().addComponents(
 
 await message.channel.send({
   embeds: [embed],
-  components: [row]
+  components: [row],
+  files: [file]
 });
 
 await message.delete().catch(() => {});

@@ -102,7 +102,7 @@ console.error(error);
 
 client.on(Events.MessageCreate, async (message) => {
 
-console.log("Message Received:", message.content);
+console.log(JSON.stringify(message.content));
 
 if (message.author.bot) return;
 
@@ -148,9 +148,9 @@ await message.delete().catch(() => {});
 // PARTY PANEL
 if (message.content === "!party") {
 
-    const embed = new EmbedBuilder()
-        .setColor("#f1c40f")
-        .setTitle("🗳️ Choose Your Party")
+await message.reply("PARTY COMMAND WORKING");
+
+}
   .setDescription(
 
 `Choose your political party.

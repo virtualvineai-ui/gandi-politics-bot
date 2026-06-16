@@ -9,8 +9,6 @@ AttachmentBuilder,
 Events
 } = require('discord.js');
 
-const { createCanvas, loadImage } = require("canvas");
-
 const client = new Client({
 intents: [
 GatewayIntentBits.Guilds,
@@ -39,74 +37,32 @@ console.log(`${client.user.tag} is online!`);
 
 client.on(Events.GuildMemberAdd, async (member) => {
 
-console.log("MEMBER JOIN DETECTED");
-
 try {
 
 const channel = member.guild.channels.cache.get(WELCOME_CHANNEL);
 
 if (!channel) return;
 
-const canvas = createCanvas(1366, 768);
-const ctx = canvas.getContext("2d");
+const embed = new EmbedBuilder()
+.setColor("#0099ff")
+.setTitle("🚨 NEW POLITICIAN DETECTED")
+.setThumbnail(member.user.displayAvatarURL())
+.setDescription(
+`Welcome ${member} 👋
 
-const background = await loadImage("./welcome-template.png");
+📜 Read the rules before starting a revolution.
 
-ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+🔐 Verify yourself.
 
-// Avatar
-const avatarURL = member.user.displayAvatarURL({
-extension: "png",
-size: 512
-});
+🗳️ Pick your party.
 
-const avatar = await loadImage(avatarURL);
+👥 Member #${member.guild.memberCount}
 
-ctx.save();
-
-ctx.beginPath();
-ctx.arc(1000, 250, 145, 0, Math.PI * 2);
-ctx.closePath();
-ctx.clip();
-
-ctx.drawImage(
-avatar,
-855,
-105,
-290,
-290
-);
-
-ctx.restore();
-
-// Username
-ctx.font = "bold 80px Arial";
-ctx.fillStyle = "#ff0000";
-
-ctx.fillText(
-"MOHIT",
-300,
-300
-);
-
-// Member Count
-ctx.font = "bold 80px Arial";
-ctx.fillStyle = "#00ff00";
-
-ctx.fillText(
-"127",
-900,
-300
-);
-
-const attachment = new AttachmentBuilder(
-canvas.toBuffer(),
-{
-name: "welcome-card.png"
-}
+May your arguments be loud and your facts optional.`
 );
 
 const row = new ActionRowBuilder().addComponents(
+
 new ButtonBuilder()
 .setLabel("📜 Rules")
 .setStyle(ButtonStyle.Link)
@@ -124,7 +80,7 @@ new ButtonBuilder()
 );
 
 await channel.send({
-files: [attachment],
+embeds: [embed],
 components: [row]
 });
 

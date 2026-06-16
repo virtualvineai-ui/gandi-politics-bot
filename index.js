@@ -151,53 +151,7 @@ if (message.content === "!party") {
 await message.reply("PARTY COMMAND WORKING");
 
 }
-  .setDescription(
-
-`Choose your political party.
-
-🪷 BJP
-🌷 Congress
-🧹 AAP
-🪳 Cockroach Party
-
-You can only have one party role at a time.`
-);
-
-const row = new ActionRowBuilder().addComponents(
-  new ButtonBuilder()
-    .setCustomId("bjp")
-    .setLabel("BJP")
-    .setEmoji("🪷")
-    .setStyle(ButtonStyle.Primary),
-
-  new ButtonBuilder()
-    .setCustomId("congress")
-    .setLabel("Congress")
-    .setEmoji("🌷")
-    .setStyle(ButtonStyle.Success),
-
-  new ButtonBuilder()
-    .setCustomId("aap")
-    .setLabel("AAP")
-    .setEmoji("🧹")
-    .setStyle(ButtonStyle.Secondary),
-
-  new ButtonBuilder()
-    .setCustomId("cockroach")
-    .setLabel("Cockroach")
-    .setEmoji("🪳")
-    .setStyle(ButtonStyle.Danger)
-);
-
-await message.channel.send({
-  embeds: [embed],
-  components: [row]
-});
-
-await message.delete().catch(() => {});
-
-}
-
+ 
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {

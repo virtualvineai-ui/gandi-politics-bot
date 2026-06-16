@@ -148,12 +148,42 @@ await message.delete().catch(() => {});
 // PARTY PANEL
 if (message.content === "!party") {
 
-console.log("PARTY COMMAND DETECTED");
+const embed = new EmbedBuilder()
+.setColor("#f1c40f")
+.setTitle("🗳️ Choose Your Political Party")
+.setDescription(
+"Select one party below.\n\nChanging party will automatically remove your previous party role."
+);
 
-await message.channel.send("PARTY COMMAND WORKING");
-}
- 
+const row = new ActionRowBuilder()
+.addComponents(
+new ButtonBuilder()
+.setCustomId("bjp")
+.setLabel("🟧 BJP")
+.setStyle(ButtonStyle.Danger),
+
+new ButtonBuilder()
+.setCustomId("congress")
+.setLabel("✋ Congress")
+.setStyle(ButtonStyle.Primary),
+
+new ButtonBuilder()
+.setCustomId("aap")
+.setLabel("🧹 AAP")
+.setStyle(ButtonStyle.Success),
+
+new ButtonBuilder()
+.setCustomId("cockroach")
+.setLabel("🪳 Cockroach")
+.setStyle(ButtonStyle.Secondary)
+);
+
+await message.channel.send({
+embeds: [embed],
+components: [row]
 });
+
+}
 
 client.on(Events.InteractionCreate, async (interaction) => {
 

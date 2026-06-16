@@ -44,15 +44,27 @@ const channel = member.guild.channels.cache.get(WELCOME_CHANNEL);
 
 if (!channel) return;
 
-await channel.send(
-`🚨 New Politician Detected: ${member}
+const row = new ActionRowBuilder().addComponents(
+  new ButtonBuilder()
+    .setLabel("📜 Rules")
+    .setStyle(ButtonStyle.Link)
+    .setURL("https://discord.com/channels/1516156573620240614/1516182741635301446"),
 
-📜 Read the rules before starting a revolution.
-🔐 Verify yourself.
-🗳️ Pick a party.
+  new ButtonBuilder()
+    .setLabel("🔐 Verify")
+    .setStyle(ButtonStyle.Link)
+    .setURL("https://discord.com/channels/1516156573620240614/1516223995010355360"),
 
-May your arguments be loud and your facts optional.`
+  new ButtonBuilder()
+    .setLabel("🗳️ Party")
+    .setStyle(ButtonStyle.Link)
+    .setURL("https://discord.com/channels/1516156573620240614/1516224756775649300")
 );
+
+await channel.send({
+  content: `🚨 Welcome ${member}`,
+  components: [row]
+});
 
 } catch (error) {
 

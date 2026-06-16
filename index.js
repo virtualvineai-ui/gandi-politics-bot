@@ -9,6 +9,8 @@ AttachmentBuilder,
 Events
 } = require('discord.js');
 
+const { createCanvas, loadImage } = require("canvas");
+
 const client = new Client({
 intents: [
 GatewayIntentBits.Guilds,
@@ -36,34 +38,91 @@ console.log(`${client.user.tag} is online!`);
 
 client.on(Events.GuildMemberAdd, async (member) => {
 
-console.log(`${member.user.tag} joined the server`);
-
 try {
 
 const channel = member.guild.channels.cache.get(WELCOME_CHANNEL);
 
 if (!channel) return;
 
+const canvas = createCanvas(1366, 768);
+const ctx = canvas.getContext("2d");
+
+const background = await loadImage("./welcome-template.png");
+
+ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+
+// Avatar
+const avatarURL = member.user.displayAvatarURL({
+extension: "png",
+size: 512
+});
+
+const avatar = await loadImage(avatarURL);
+
+ctx.save();
+
+ctx.beginPath();
+ctx.arc(1000, 260, 180, 0, Math.PI * 2);
+ctx.closePath();
+ctx.clip();
+
+ctx.drawImage(
+avatar,
+820,
+80,
+360,
+360
+);
+
+ctx.restore();
+
+// Username
+ctx.font = "bold 52px Sans";
+ctx.fillStyle = "#2f8cff";
+
+ctx.fillText(
+`@${member.user.username}`,
+85,
+520
+);
+
+// Member Count
+ctx.font = "bold 72px Sans";
+ctx.fillStyle = "#ffffff";
+
+ctx.fillText(
+`#${member.guild.memberCount}`,
+930,
+560
+);
+
+const attachment = new AttachmentBuilder(
+canvas.toBuffer(),
+{
+name: "welcome-card.png"
+}
+);
+
 const row = new ActionRowBuilder().addComponents(
-  new ButtonBuilder()
-    .setLabel("📜 Rules")
-    .setStyle(ButtonStyle.Link)
-    .setURL("https://discord.com/channels/1516156573620240614/1516182741635301446"),
+new ButtonBuilder()
+.setLabel("📜 Rules")
+.setStyle(ButtonStyle.Link)
+.setURL("https://discord.com/channels/1516156573620240614/1516182741635301446"),
 
-  new ButtonBuilder()
-    .setLabel("🔐 Verify")
-    .setStyle(ButtonStyle.Link)
-    .setURL("https://discord.com/channels/1516156573620240614/1516223995010355360"),
+new ButtonBuilder()
+.setLabel("🔐 Verify")
+.setStyle(ButtonStyle.Link)
+.setURL("https://discord.com/channels/1516156573620240614/1516223995010355360"),
 
-  new ButtonBuilder()
-    .setLabel("🗳️ Party")
-    .setStyle(ButtonStyle.Link)
-    .setURL("https://discord.com/channels/1516156573620240614/1516224756775649300")
+new ButtonBuilder()
+.setLabel("🗳️ Party")
+.setStyle(ButtonStyle.Link)
+.setURL("https://discord.com/channels/1516156573620240614/1516224756775649300")
 );
 
 await channel.send({
-  content: `🚨 Welcome ${member}`,
-  components: [row]
+files: [attachment],
+components: [row]
 });
 
 } catch (error) {

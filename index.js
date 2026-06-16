@@ -185,9 +185,9 @@ const file = new AttachmentBuilder(
 
 const row = new ActionRowBuilder().addComponents(
 new ButtonBuilder()
-.setCustomId("verify")
-.setLabel("Verify Securely")
-.setStyle(ButtonStyle.Primary)
+.setLabel("🔐 Verify Securely")
+.setStyle(ButtonStyle.Link)
+.setURL("https://gandi-politics-verify.vercel.app")
 );
 
 await message.channel.send({
@@ -252,31 +252,6 @@ components: [row]
 client.on(Events.InteractionCreate, async (interaction) => {
 
 if (!interaction.isButton()) return;
-
-// VERIFY
-if (interaction.customId === "verify") {
-
-try {
-
-await interaction.member.roles.add(PUBLIC_VIEWER);
-
-return interaction.reply({
-content: "✅ Verification Successful!",
-ephemeral: true
-});
-
-} catch (err) {
-
-console.error(err);
-
-return interaction.reply({
-content: "❌ Verification Failed.",
-ephemeral: true
-});
-
-}
-
-}
 
 // PARTY ROLES
 if (

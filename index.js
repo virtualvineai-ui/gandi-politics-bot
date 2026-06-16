@@ -36,6 +36,8 @@ console.log(`${client.user.tag} is online!`);
 
 client.on(Events.GuildMemberAdd, async (member) => {
 
+console.log(`${member.user.tag} joined the server`);
+
 try {
 
 const channel = member.guild.channels.cache.get(WELCOME_CHANNEL);

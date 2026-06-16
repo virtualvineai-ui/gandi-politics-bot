@@ -148,8 +148,9 @@ await message.delete().catch(() => {});
 // PARTY PANEL
 if (message.content === "!party") {
 
-await message.reply("PARTY COMMAND WORKING");
+console.log("PARTY COMMAND DETECTED");
 
+await message.channel.send("PARTY COMMAND WORKING");
 }
  
 });

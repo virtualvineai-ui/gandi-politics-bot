@@ -28,8 +28,36 @@ const CONGRESS_ROLE = "1516156573620240616";
 const AAP_ROLE = "1516156573620240615";
 const COCKROACH_ROLE = "1516180882942197772";
 
+const WELCOME_CHANNEL = "1516156577122353207";
+
 client.once(Events.ClientReady, () => {
 console.log(`${client.user.tag} is online!`);
+});
+
+client.on(Events.GuildMemberAdd, async (member) => {
+
+try {
+
+const channel = member.guild.channels.cache.get(WELCOME_CHANNEL);
+
+if (!channel) return;
+
+await channel.send(
+`🚨 New Politician Detected: ${member}
+
+📜 Read the rules before starting a revolution.
+🔐 Verify yourself.
+🗳️ Pick a party.
+
+May your arguments be loud and your facts optional.`
+);
+
+} catch (error) {
+
+console.error(error);
+
+}
+
 });
 
 client.on(Events.MessageCreate, async (message) => {

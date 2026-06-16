@@ -45,8 +45,15 @@ timeZone: "Asia/Kolkata"
 })
 );
 
-// TEST MODE
-if (indiaTime.getMinutes() % 2 === 0) {
+const today = indiaTime.toDateString();
+
+if (
+indiaTime.getHours() === 10 &&
+indiaTime.getMinutes() === 0 &&
+lastPollDate !== today
+) {
+
+lastPollDate = today; {
 
 const channel = client.channels.cache.get(POLL_CHANNEL);
 
@@ -61,7 +68,10 @@ Sabse bada scam?
 3️⃣ Crypto Guru
 4️⃣ Political Promises`;
 
-const msg = await channel.send(poll);
+const msg = await channel.send({
+content: `@everyone\n\n${poll}`,
+allowedMentions: { parse: ["everyone"] }
+});
 
 await msg.react("1️⃣");
 await msg.react("2️⃣");

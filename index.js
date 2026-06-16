@@ -47,10 +47,15 @@ if (!channel) return;
 
 const embed = new EmbedBuilder()
 .setColor("#0099ff")
-.setTitle("🚨 NEW POLITICIAN DETECTED")
-.setThumbnail(member.user.displayAvatarURL())
+.setAuthor({
+name: "🚨 NEW POLITICIAN DETECTED",
+iconURL: member.user.displayAvatarURL({ size: 256 })
+})
+.setThumbnail(
+member.user.displayAvatarURL({ size: 512 })
+)
 .setDescription(
-`Welcome ${member} 👋
+`## Welcome ${member} 👋
 
 📜 Read the rules before starting a revolution.
 
@@ -58,10 +63,11 @@ const embed = new EmbedBuilder()
 
 🗳️ Pick your party.
 
-👥 Member #${member.guild.memberCount}
+👥 **Member #${member.guild.memberCount}**
 
-May your arguments be loud and your facts optional.`
-);
+*May your arguments be loud and your facts optional.*`
+)
+.setTimestamp();
 
 const row = new ActionRowBuilder().addComponents(
 

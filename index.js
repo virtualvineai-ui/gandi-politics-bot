@@ -150,7 +150,10 @@ await message.delete().catch(() => {});
 }
 
 // PARTY PANEL
-if (message.content === "!party") {
+if (
+message.content === "!party" &&
+message.channel.id === "1516224756775649300"
+)
 
 const embed = new EmbedBuilder()
 .setColor("#f1c40f")

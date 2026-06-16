@@ -30,10 +30,48 @@ const COCKROACH_ROLE = "1516180882942197772";
 
 // CHANNELS
 const WELCOME_CHANNEL = "1516156577122353207";
+const POLL_CHANNEL = "1516183085316706314";
 
 client.once(Events.ClientReady, () => {
 console.log("BOT READY");
 console.log(`${client.user.tag} is online!`);
+setInterval(async () => {
+
+const now = new Date();
+
+const indiaTime = new Date(
+now.toLocaleString("en-US", {
+timeZone: "Asia/Kolkata"
+})
+);
+
+// TEST MODE
+if (indiaTime.getMinutes() % 2 === 0) {
+
+const channel = client.channels.cache.get(POLL_CHANNEL);
+
+if (!channel) return;
+
+const poll = `📊 Daily Poll
+
+Sabse bada scam?
+
+1️⃣ Salary
+2️⃣ True Love
+3️⃣ Crypto Guru
+4️⃣ Political Promises`;
+
+const msg = await channel.send(poll);
+
+await msg.react("1️⃣");
+await msg.react("2️⃣");
+await msg.react("3️⃣");
+await msg.react("4️⃣");
+
+}
+
+}, 60000);
+
 });
 
 // =========================

@@ -143,8 +143,6 @@ await message.channel.send({
 
 }
 
-});
-
 await message.delete().catch(() => {});
 
 }

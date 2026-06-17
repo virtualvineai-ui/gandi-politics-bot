@@ -468,25 +468,18 @@ client.on("messageReactionAdd", async (reaction, user) => {
         if (!EMOJIS.includes(emoji)) {
 
             await reaction.users.remove(user.id);
-
             return;
 
         }
 
-        const memberVotes = data.currentPoll.votes || {};
+        // Remove all other reactions from this user
+        for (const e of EMOJIS) {
 
-        const previousVote = memberVotes[user.id];
+            if (e === emoji) continue;
 
-        // Same emoji -> ignore
-        if (previousVote === emoji) return;
-
-        // Remove previous reaction
-        if (previousVote) {
-
-            const oldReaction =
-                reaction.message.reactions.cache.find(
-                    r => r.emoji.name === previousVote
-                );
+            const oldReaction = reaction.message.reactions.cache.find(
+                r => r.emoji.name === e
+            );
 
             if (oldReaction) {
 
@@ -494,15 +487,13 @@ client.on("messageReactionAdd", async (reaction, user) => {
 
                     await oldReaction.users.remove(user.id);
 
-                } catch {}
+                } catch (err) {}
 
             }
 
         }
 
-        memberVotes[user.id] = emoji;
-
-        data.currentPoll.votes = memberVotes;
+        data.currentPoll.votes[user.id] = emoji;
 
         savePollData(data);
 
@@ -523,39 +514,7 @@ client.on("messageReactionAdd", async (reaction, user) => {
 
 client.on("messageReactionRemove", async (reaction, user) => {
 
-    try {
-
-        if (user.bot) return;
-
-        if (reaction.partial) await reaction.fetch();
-
-        const data = loadPollData();
-
-        if (!data.currentPoll) return;
-
-        if (reaction.message.id !== data.currentPoll.id) return;
-
-        if (
-
-            data.currentPoll.votes &&
-
-            data.currentPoll.votes[user.id] === reaction.emoji.name
-
-        ) {
-
-            delete data.currentPoll.votes[user.id];
-
-            savePollData(data);
-
-        }
-
-    }
-
-    catch (err) {
-
-        console.error(err);
-
-    }
+    if (user.bot) return;
 
 });
 

@@ -449,9 +449,7 @@ ${footer}`;
 // =======================================
 
 client.on("messageReactionAdd", async (reaction, user) => {
-
-console.log("REACTION EVENT:", user.tag, reaction.emoji.name);    
-
+  
     try {
 
         if (user.bot) return;
@@ -466,8 +464,6 @@ console.log("REACTION EVENT:", user.tag, reaction.emoji.name);
         if (reaction.message.id !== data.currentPoll.id) return;
 
         const emoji = reaction.emoji.name;
-
-        console.log("Reaction:", user.tag, emoji);
 
         if (!EMOJIS.includes(emoji)) {
 
@@ -491,17 +487,9 @@ for (const e of EMOJIS) {
 
     if (!reacted) continue;
 
-    console.log(`Removing ${e} from ${user.tag}`);
-
     try {
 
-console.log("Bot ID:", reaction.client.user.id);
-console.log("Message Author ID:", reaction.message.author.id);
-console.log("User ID:", user.id);
-
         await oldReaction.users.remove(user.id);
-
-        console.log("Trying to remove reaction...");
 
     } catch (err) {
 

@@ -6,18 +6,32 @@ ActionRowBuilder,
 ButtonBuilder,
 ButtonStyle,
 AttachmentBuilder,
-Events
+Events,
+Partials
 } = require("discord.js");
 
 const polls = require("./polls");
 
 const client = new Client({
+
 intents: [
+
 GatewayIntentBits.Guilds,
 GatewayIntentBits.GuildMessages,
 GatewayIntentBits.GuildMembers,
-GatewayIntentBits.MessageContent
+GatewayIntentBits.MessageContent,
+GatewayIntentBits.GuildMessageReactions
+
+],
+
+partials: [
+
+Partials.Message,
+Partials.Channel,
+Partials.Reaction
+
 ]
+
 });
 
 const TOKEN = process.env.TOKEN;
@@ -34,53 +48,9 @@ const COCKROACH_ROLE = "1516180882942197772";
 const WELCOME_CHANNEL = "1516156577122353207";
 const POLL_CHANNEL = "1516183085316706314";
 
-let lastPollDate = "";
-
 client.once(Events.ClientReady, () => {
-console.log("BOT READY");
-console.log(`${client.user.tag} is online!`);
-setInterval(async () => {
-
-const now = new Date();
-
-const indiaTime = new Date(
-now.toLocaleString("en-US", {
-timeZone: "Asia/Kolkata"
-})
-);
-
-const today = indiaTime.toDateString();
-
-if (
-indiaTime.getHours() === 10 &&
-indiaTime.getMinutes() === 0 &&
-lastPollDate !== today
-) {
-
-lastPollDate = today;
-
-const channel = client.channels.cache.get(POLL_CHANNEL);
-
-if (!channel) return;
-
-const poll = polls.length
-    ? polls[Math.floor(Math.random() * polls.length)]
-    : "📊 Daily Poll\n\nNo polls found.";
-
-const msg = await channel.send({
-content: `@everyone\n\n${poll}`,
-allowedMentions: { parse: ["everyone"] }
-});
-
-await msg.react("1️⃣");
-await msg.react("2️⃣");
-await msg.react("3️⃣");
-await msg.react("4️⃣");
-
-}
-
-}, 60000);
-
+    console.log("BOT READY");
+    console.log(`${client.user.tag} is online!`);
 });
 
 // =========================

@@ -4,6 +4,15 @@
   "lastVotes": 0,
   "lastPercent": 0,
   "lastPollMessage": "",
+  "lastPollDate": "",
+
+  "usedPolls": [],
+
+  "history": [],
+
+  "currentPoll": null,
+
   "weeklyVotes": {},
+
   "totalVotes": 0
 }

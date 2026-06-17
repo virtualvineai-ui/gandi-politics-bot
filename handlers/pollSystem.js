@@ -5,83 +5,287 @@ const polls = require("../polls");
 const footers = require("../footers");
 const config = require("../config");
 
-const DATA_FILE = path.join(__dirname, "../data/pollData.json");
+const POLL_FILE = path.join(__dirname, "../data/pollData.json");
+const LEADERBOARD_FILE = path.join(__dirname, "../data/leaderboard.json");
+const WEEKLY_FILE = path.join(__dirname, "../data/weekly.json");
 
-function loadData() {
-    if (!fs.existsSync(DATA_FILE)) {
-        return {
-            pollNumber: 1,
-            lastWinner: "",
-            lastVotes: 0,
-            lastPercent: 0,
-            lastPollMessage: "",
-            weeklyVotes: {},
-            totalVotes: 0,
-            lastPollDate: ""
-        };
+const POLL_DURATION = 24 * 60 * 60 * 1000;
+const SCHEDULE_HOUR = 10;
+const SCHEDULE_MINUTE = 0;
+
+const EMOJIS = ["1️⃣", "2️⃣", "3️⃣", "4️⃣"];
+
+const ALL_POLLS = [];
+
+for (const category of Object.keys(polls)) {
+
+    for (const poll of polls[category]) {
+
+        ALL_POLLS.push({
+
+            category,
+
+            question: poll
+
+        });
+
     }
 
-    return JSON.parse(fs.readFileSync(DATA_FILE, "utf8"));
 }
 
-function saveData(data) {
-    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+function ensureFile(file, data) {
+
+    if (!fs.existsSync(file)) {
+
+        fs.mkdirSync(path.dirname(file), {
+
+            recursive: true
+
+        });
+
+        fs.writeFileSync(
+
+            file,
+
+            JSON.stringify(data, null, 2)
+
+        );
+
+    }
+
+}
+
+ensureFile(POLL_FILE, {
+
+    pollNumber: 1,
+
+    lastPollDate: "",
+
+    lastMessage: "",
+
+    currentPoll: null,
+
+    usedPolls: [],
+
+    history: [],
+
+    activePoll: null,
+
+    yesterday: {
+
+        winner: "",
+
+        votes: 0,
+
+        percent: 0
+
+    }
+
+});
+
+ensureFile(LEADERBOARD_FILE, {});
+
+ensureFile(WEEKLY_FILE, {
+
+    week: 1,
+
+    votes: {}
+
+});
+
+function read(file) {
+
+    try {
+
+        return JSON.parse(
+
+            fs.readFileSync(file, "utf8")
+
+        );
+
+    }
+
+    catch {
+
+        return {};
+
+    }
+
+}
+
+function save(file, data) {
+
+    fs.writeFileSync(
+
+        file,
+
+        JSON.stringify(data, null, 2)
+
+    );
+
+}
+
+function loadPollData() {
+
+    return read(POLL_FILE);
+
+}
+
+function savePollData(data) {
+
+    save(POLL_FILE, data);
+
+}
+
+function loadLeaderboard() {
+
+    return read(LEADERBOARD_FILE);
+
+}
+
+function saveLeaderboard(data) {
+
+    save(LEADERBOARD_FILE, data);
+
+}
+
+function loadWeekly() {
+
+    return read(WEEKLY_FILE);
+
+}
+
+function saveWeekly(data) {
+
+    save(WEEKLY_FILE, data);
+
+}
+
+function getToday() {
+
+    return new Date().toLocaleDateString(
+
+        "en-IN",
+
+        {
+
+            timeZone: "Asia/Kolkata"
+
+        }
+
+    );
+
+}
+
+function getRandomPoll(data) {
+
+    if (data.usedPolls.length >= ALL_POLLS.length) {
+
+        data.usedPolls = [];
+
+    }
+
+    const available = ALL_POLLS.filter(
+
+        p => !data.usedPolls.includes(p.question)
+
+    );
+
+    const selected =
+
+        available[
+
+            Math.floor(
+
+                Math.random() *
+
+                available.length
+
+            )
+
+        ];
+
+    data.usedPolls.push(
+
+        selected.question
+
+    );
+
+    savePollData(data);
+
+    return selected;
+
+}
+
+function getRandomFooter() {
+
+    return footers[
+
+        Math.floor(
+
+            Math.random() *
+
+            footers.length
+
+        )
+
+    ];
+
+}
+
+function getTomorrow() {
+
+    return Date.now() +
+
+        POLL_DURATION;
+
 }
 
 module.exports = (client) => {
 
+    console.log("PollSystem Loaded");
+
     async function sendDailyPoll() {
 
-        const data = loadData();
+        const data = loadPollData();
 
-        const today = new Date().toLocaleDateString("en-IN");
+        const today = getToday();
 
-        if (data.lastPollDate === today) return;
+        if (data.lastPollDate === today) {
 
-        data.lastPollDate = today;
+            return;
 
-        saveData(data);
+        }
 
-        const channel = client.channels.cache.get(config.POLL_CHANNEL);
+        const channel = client.channels.cache.get(
+            config.POLL_CHANNEL
+        );
 
-        if (!channel) return;
+        if (!channel) {
 
-        // -----------------------------
-        // RANDOM CATEGORY
-        // -----------------------------
+            console.log("Poll channel not found.");
 
-        const categories = Object.keys(polls);
+            return;
 
-        const randomCategory =
-            categories[Math.floor(Math.random() * categories.length)];
+        }
 
-        const categoryPolls = polls[randomCategory];
+        const selected = getRandomPoll(data);
 
-        if (!categoryPolls.length) return;
+        const footer = getRandomFooter();
 
-        const poll =
-            categoryPolls[Math.floor(Math.random() * categoryPolls.length)];
+        let winnerSection = "";
 
-        // -----------------------------
-        // FOOTER
-        // -----------------------------
+        if (
+            data.yesterday &&
+            data.yesterday.winner
+        ) {
 
-        const footer =
-            footers[Math.floor(Math.random() * footers.length)];
-
-        // -----------------------------
-        // WINNER SECTION
-        // -----------------------------
-
-        let winnerText = "";
-
-        if (data.lastWinner) {
-
-            winnerText =
+            winnerSection =
 `🏆 **Yesterday's Winner**
 
-🥇 ${data.lastWinner}
-👥 ${data.lastVotes} Votes (${data.lastPercent}%)
+🥇 ${data.yesterday.winner}
+👥 ${data.yesterday.votes} Votes
+📈 ${data.yesterday.percent}%
 
 ━━━━━━━━━━━━━━━━━━━━━━
 
@@ -89,51 +293,427 @@ module.exports = (client) => {
 
         }
 
-        const message =
-
+        const pollText =
 `📊 **DAILY POLL #${data.pollNumber}**
 
-${winnerText}${poll}
+${winnerSection}
+
+${selected.question}
 
 ━━━━━━━━━━━━━━━━━━━━━━
 
-🔥 Vote ends in **24 Hours**
+🔥 Voting ends in **24 Hours**
 
 ${footer}`;
 
-        const msg = await channel.send({
+        const message = await channel.send({
 
-            content: "@everyone",
+            content: "@everyone\n\n" + pollText,
 
             allowedMentions: {
-                parse: ["everyone"]
-            },
 
-            content: `@everyone\n\n${message}`
+                parse: ["everyone"]
+
+            }
 
         });
 
-        await msg.react("1️⃣");
-        await msg.react("2️⃣");
-        await msg.react("3️⃣");
-        await msg.react("4️⃣");
+        for (const emoji of EMOJIS) {
 
-        data.lastPollMessage = msg.id;
+            try {
+
+                await message.react(emoji);
+
+            }
+
+            catch (err) {
+
+                console.log(err);
+
+            }
+
+        }
+
+        data.lastPollDate = today;
+
+        data.lastMessage = message.id;
+
+        data.currentPoll = {
+
+            id: message.id,
+
+            channel: channel.id,
+
+            question: selected.question,
+
+            createdAt: Date.now(),
+
+            endsAt: getTomorrow(),
+
+            votes: {},
+
+            closed: false
+
+        };
+
+        data.history.push({
+
+            number: data.pollNumber,
+
+            question: selected.question,
+
+            date: today,
+
+            messageId: message.id
+
+        });
+
+        if (data.history.length > 500) {
+
+            data.history.shift();
+
+        }
+
         data.pollNumber++;
 
-        saveData(data);
+        savePollData(data);
+
+        console.log(
+
+            "Daily Poll Posted Successfully."
+
+        );
+
     }
 
-    client.once("ready", () => {
+    function millisecondsUntil10AM() {
 
-        sendDailyPoll();
+        const now = new Date();
 
-        setInterval(() => {
+        const target = new Date();
 
-            sendDailyPoll();
+        target.setHours(
+            SCHEDULE_HOUR,
+            SCHEDULE_MINUTE,
+            0,
+            0
+        );
 
-        }, 60000);
+        if (now > target) {
 
-    });
+            target.setDate(
+
+                target.getDate() + 1
+
+            );
+
+        }
+
+        return target.getTime() - now.getTime();
+
+    }
+
+    function startScheduler() {
+
+        const delay = millisecondsUntil10AM();
+
+        console.log(
+
+            "Next poll in",
+
+            Math.floor(delay / 1000),
+
+            "seconds"
+
+        );
+
+        setTimeout(async () => {
+
+            await sendDailyPoll();
+
+            setInterval(
+
+                sendDailyPoll,
+
+                24 * 60 * 60 * 1000
+
+            );
+
+        }, delay);
+
+    }
+
+
+    // =======================================
+// REACTION VOTE SYSTEM
+// =======================================
+
+client.on("messageReactionAdd", async (reaction, user) => {
+
+    try {
+
+        if (user.bot) return;
+
+        if (reaction.partial) await reaction.fetch();
+        if (reaction.message.partial) await reaction.message.fetch();
+
+        const data = loadPollData();
+
+        if (!data.currentPoll) return;
+
+        if (reaction.message.id !== data.currentPoll.id) return;
+
+        const emoji = reaction.emoji.name;
+
+        if (!EMOJIS.includes(emoji)) {
+
+            await reaction.users.remove(user.id);
+
+            return;
+
+        }
+
+        const memberVotes = data.currentPoll.votes || {};
+
+        const previousVote = memberVotes[user.id];
+
+        // Same emoji -> ignore
+        if (previousVote === emoji) return;
+
+        // Remove previous reaction
+        if (previousVote) {
+
+            const oldReaction =
+                reaction.message.reactions.cache.find(
+                    r => r.emoji.name === previousVote
+                );
+
+            if (oldReaction) {
+
+                try {
+
+                    await oldReaction.users.remove(user.id);
+
+                } catch {}
+
+            }
+
+        }
+
+        memberVotes[user.id] = emoji;
+
+        data.currentPoll.votes = memberVotes;
+
+        savePollData(data);
+
+    }
+
+    catch (err) {
+
+        console.error("Vote Error:", err);
+
+    }
+
+});
+
+
+// =======================================
+// REMOVE INVALID REACTIONS
+// =======================================
+
+client.on("messageReactionRemove", async (reaction, user) => {
+
+    try {
+
+        if (user.bot) return;
+
+        if (reaction.partial) await reaction.fetch();
+
+        const data = loadPollData();
+
+        if (!data.currentPoll) return;
+
+        if (reaction.message.id !== data.currentPoll.id) return;
+
+        if (
+
+            data.currentPoll.votes &&
+
+            data.currentPoll.votes[user.id] === reaction.emoji.name
+
+        ) {
+
+            delete data.currentPoll.votes[user.id];
+
+            savePollData(data);
+
+        }
+
+    }
+
+    catch (err) {
+
+        console.error(err);
+
+    }
+
+});
+
+// =======================================
+// POLL RESULT CHECKER
+// =======================================
+
+async function checkPollResult() {
+
+    try {
+
+        const data = loadPollData();
+
+        if (!data.currentPoll) return;
+
+        if (data.currentPoll.closed) return;
+
+        if (Date.now() < data.currentPoll.endsAt) return;
+
+        const votes = Object.values(data.currentPoll.votes || {});
+
+        const counts = {};
+
+        for (const emoji of EMOJIS) {
+
+            counts[emoji] = 0;
+
+        }
+
+        for (const vote of votes) {
+
+            if (counts.hasOwnProperty(vote)) {
+
+                counts[vote]++;
+
+            }
+
+        }
+
+        let winnerEmoji = null;
+        let winnerVotes = -1;
+
+        for (const emoji of EMOJIS) {
+
+            if (counts[emoji] > winnerVotes) {
+
+                winnerVotes = counts[emoji];
+                winnerEmoji = emoji;
+
+            }
+
+        }
+
+        const totalVotes = votes.length;
+
+        const percent =
+            totalVotes === 0
+                ? 0
+                : Number(((winnerVotes / totalVotes) * 100).toFixed(1));
+
+        data.yesterday = {
+
+            winner: winnerEmoji || "No Winner",
+
+            votes: winnerVotes < 0 ? 0 : winnerVotes,
+
+            percent
+
+        };
+
+        data.currentPoll.closed = true;
+
+// ==============================
+// UPDATE LEADERBOARD
+// ==============================
+
+const leaderboard = loadLeaderboard();
+const weekly = loadWeekly();
+
+const uniqueVoters = Object.keys(data.currentPoll.votes || {});
+
+for (const userId of uniqueVoters) {
+
+    if (!leaderboard[userId]) {
+
+        leaderboard[userId] = {
+
+            votes: 0
+
+        };
+
+    }
+
+    leaderboard[userId].votes++;
+
+    if (!weekly.votes[userId]) {
+
+        weekly.votes[userId] = {
+
+            votes: 0
+
+        };
+
+    }
+
+    weekly.votes[userId].votes++;
+
+}
+
+saveLeaderboard(leaderboard);
+saveWeekly(weekly);
+
+        savePollData(data);
+
+        const channel = client.channels.cache.get(
+            data.currentPoll.channel
+        );
+
+        if (channel) {
+
+            await channel.send(
+
+`🏁 **Today's Poll Ended**
+
+🥇 Winner: ${data.yesterday.winner}
+
+👥 Votes: ${data.yesterday.votes}
+
+📊 Percentage: ${data.yesterday.percent}%
+
+🗳️ Total Votes: ${totalVotes}`
+
+            );
+
+        }
+
+        console.log("Poll closed successfully.");
+
+    }
+
+    catch (err) {
+
+        console.error("Poll Result Error:", err);
+
+    }
+
+}
+
+client.once("ready", async () => {
+
+    console.log("Production Poll Scheduler Started");
+
+    await sendDailyPoll();
+
+    startScheduler();
+
+    setInterval(checkPollResult, 60000);
+
+});
 
 };

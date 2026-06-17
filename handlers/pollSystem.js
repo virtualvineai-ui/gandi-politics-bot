@@ -704,7 +704,7 @@ saveWeekly(weekly);
 
 }
 
-client.once("ready", async () => {
+client.once("clientReady", async () => {
 
     console.log("Production Poll Scheduler Started");
 

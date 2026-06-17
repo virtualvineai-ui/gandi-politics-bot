@@ -450,6 +450,8 @@ ${footer}`;
 
 client.on("messageReactionAdd", async (reaction, user) => {
 
+console.log("REACTION EVENT:", user.tag, reaction.emoji.name);    
+
     try {
 
         if (user.bot) return;

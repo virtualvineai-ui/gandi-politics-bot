@@ -9,6 +9,8 @@ AttachmentBuilder,
 Events
 } = require("discord.js");
 
+const polls = require("./polls");
+
 const client = new Client({
 intents: [
 GatewayIntentBits.Guilds,
@@ -61,14 +63,9 @@ const channel = client.channels.cache.get(POLL_CHANNEL);
 
 if (!channel) return;
 
-const poll = `📊 Daily Poll
-
-Sabse bada scam?
-
-1️⃣ Salary
-2️⃣ True Love
-3️⃣ Crypto Guru
-4️⃣ Political Promises`;
+const poll = polls.length
+    ? polls[Math.floor(Math.random() * polls.length)]
+    : "📊 Daily Poll\n\nNo polls found.";
 
 const msg = await channel.send({
 content: `@everyone\n\n${poll}`,

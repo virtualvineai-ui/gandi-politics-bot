@@ -26,6 +26,7 @@ GatewayIntentBits.GuildMessageReactions
 
 partials: [
 
+Partials.User,    
 Partials.Message,
 Partials.Channel,
 Partials.Reaction

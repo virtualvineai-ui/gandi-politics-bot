@@ -477,28 +477,33 @@ console.log("REACTION EVENT:", user.tag, reaction.emoji.name);
         }
 
         // Remove all other reactions from this user
-        for (const e of EMOJIS) {
+for (const e of EMOJIS) {
 
-            if (e === emoji) continue;
+    if (e === emoji) continue;
 
-            const oldReaction = reaction.message.reactions.cache.find(
-                r => r.emoji.name === e
-            );
+    const oldReaction = reaction.message.reactions.cache.find(
+        r => r.emoji.name === e
+    );
 
-            if (oldReaction) {
+    if (!oldReaction) continue;
 
-                try {
+    const reacted = oldReaction.users.cache.has(user.id);
 
-                    console.log("Removing:", previousVote, "->", emoji);
+    if (!reacted) continue;
 
-                    await oldReaction.users.remove(user.id);
+    console.log(`Removing ${e} from ${user.tag}`);
 
-                } catch (err) {}
+    try {
 
-            }
+        await oldReaction.users.remove(user.id);
 
-        }
+    } catch (err) {
 
+        console.error(err);
+
+    }
+
+}
         data.currentPoll.votes[user.id] = emoji;
 
         savePollData(data);

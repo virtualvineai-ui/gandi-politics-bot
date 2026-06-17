@@ -312,4 +312,6 @@ ephemeral: true
 
 });
 
+require("./handlers/pollSystem")(client);
+
 client.login(TOKEN);

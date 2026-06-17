@@ -24,4 +24,12 @@ AAP_ROLE: "1516156573620240615",
 
 COCKROACH_ROLE: "1516180882942197772"
 
+RULES_URL: "https://discord.com/channels/1516156573620240614/1516182741635301446",
+
+VERIFY_URL: "https://gandi-politics-verify.vercel.app",
+
+POLL_TIME: "10:00",
+
+TIMEZONE: "Asia/Kolkata",
+
 };

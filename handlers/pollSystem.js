@@ -465,6 +465,8 @@ client.on("messageReactionAdd", async (reaction, user) => {
 
         const emoji = reaction.emoji.name;
 
+        console.log("Reaction:", user.tag, emoji);
+
         if (!EMOJIS.includes(emoji)) {
 
             await reaction.users.remove(user.id);
@@ -484,6 +486,8 @@ client.on("messageReactionAdd", async (reaction, user) => {
             if (oldReaction) {
 
                 try {
+
+                    console.log("Removing:", previousVote, "->", emoji);
 
                     await oldReaction.users.remove(user.id);
 

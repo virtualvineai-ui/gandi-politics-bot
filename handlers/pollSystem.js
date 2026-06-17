@@ -495,7 +495,13 @@ for (const e of EMOJIS) {
 
     try {
 
+console.log("Bot ID:", reaction.client.user.id);
+console.log("Message Author ID:", reaction.message.author.id);
+console.log("User ID:", user.id);
+
         await oldReaction.users.remove(user.id);
+
+        console.log("Trying to remove reaction...");
 
     } catch (err) {
 
